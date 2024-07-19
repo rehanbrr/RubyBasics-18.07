@@ -1,8 +1,6 @@
 class ArticlesController < ApplicationController
   def index
-    if user_signed_in?
-      @articles = Article.where("written_by = ? OR status = ?", current_user.email, "public")
-    end
+    @articles = Article.where("written_by = ? OR status = ?", current_user.email, "public")
   end
 
   def show
@@ -29,8 +27,12 @@ class ArticlesController < ApplicationController
   def update
     @article = Article.find(params[:id])
 
-    if @article.update(article_params)
-      redirect_to @article
+    if(@article.written_by == current_user.email)
+      if @article.update(article_params)
+        redirect_to @article
+      else
+        render :edit, status: :unprocessable_entity
+      end
     else
       render :edit, status: :unprocessable_entity
     end
