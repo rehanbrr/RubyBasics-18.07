@@ -1,6 +1,6 @@
 class ArticlesController < ApplicationController
   def index
-    @articles = Article.all
+    @articles = Article.where("written_by = ? OR status = ?", current_user.email, "public")
   end
 
   def show
@@ -13,7 +13,6 @@ class ArticlesController < ApplicationController
 
   def create
     @article = Article.new(article_params)
-
     if @article.save
       redirect_to @article
     else
@@ -28,8 +27,12 @@ class ArticlesController < ApplicationController
   def update
     @article = Article.find(params[:id])
 
-    if @article.update(article_params)
-      redirect_to @article
+    if(@article.written_by == current_user.email)
+      if @article.update(article_params)
+        redirect_to @article
+      else
+        render :edit, status: :unprocessable_entity
+      end
     else
       render :edit, status: :unprocessable_entity
     end
@@ -39,11 +42,11 @@ class ArticlesController < ApplicationController
     @article = Article.find(params[:id])
     @article.destroy
 
-    redirect_to root_path, status: :see_other
+    redirect_to @article, status: :see_other
   end
 
   private
     def article_params
-      params.require(:article).permit(:title, :body, :status)
+      params.require(:article).permit(:title, :body, :status, :written_by)
     end
 end

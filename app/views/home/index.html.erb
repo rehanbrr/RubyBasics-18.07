@@ -1,0 +1,4 @@
+ <div> Welcome <%= current_user.email %> </div> 
+  <%= button_to "Sign out", destroy_user_session_path, method: :delete %> 
+  <%= button_to "View Articles", articles_path, method: :get%>
+<h1>Hello Article Readers!</h1>
