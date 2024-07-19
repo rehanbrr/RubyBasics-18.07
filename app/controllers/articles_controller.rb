@@ -1,6 +1,8 @@
 class ArticlesController < ApplicationController
   def index
-    @articles = Article.all
+    if user_signed_in?
+      @articles = Article.where("written_by = ? OR status = ?", current_user.email, "public")
+    end
   end
 
   def show
@@ -13,7 +15,6 @@ class ArticlesController < ApplicationController
 
   def create
     @article = Article.new(article_params)
-
     if @article.save
       redirect_to @article
     else
@@ -39,11 +40,11 @@ class ArticlesController < ApplicationController
     @article = Article.find(params[:id])
     @article.destroy
 
-    redirect_to root_path, status: :see_other
+    redirect_to @article, status: :see_other
   end
 
   private
     def article_params
-      params.require(:article).permit(:title, :body, :status)
+      params.require(:article).permit(:title, :body, :status, :written_by)
     end
 end
