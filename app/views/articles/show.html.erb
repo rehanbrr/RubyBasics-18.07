@@ -12,6 +12,8 @@
                     turbo_method: :delete,
                     turbo_confirm: "Are you sure?"
                   } %></li>
+
+  <%= button_to "Like", new_article_like_path(@article), method: :post%>
 </ul>
 
 <h2>Comments</h2>
